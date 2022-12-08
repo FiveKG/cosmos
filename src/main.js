@@ -232,6 +232,7 @@ $(window).on('load', function () {
         window.localStorage.setItem('disclaimerShown', true);
     }
 });
+var sum = 0
 $('#sendForm').submit(async function (e) {
     e.preventDefault();
     $.toast().reset("all");
@@ -301,28 +302,66 @@ $('#sendForm').submit(async function (e) {
                     sequence: account.sequence,
                     chainId: chainId,
                 };
-                sign(chainId, accounts[0].address, ops, fee, '', signerData).then(
-                    (bodyBytes) => {
-                        broadcastTx(bodyBytes, chain).then((res) => {
-                            $.toast().reset("all");
-                            $.toast({
-                                heading: "Success",
-                                text: "Transaction Successful! ",
-                                showHideTransition: "slide",
-                                position: "top-center",
-                                icon: "success",
-                            });
-                            if (res.data.tx_response.code === 0) {
-                                let status = `<p>Transaction ID: </p><a href='https://ping.pub/${chain.name}/tx/${res.data.tx_response.txhash}' target="_blank">${res.data.tx_response.txhash}</a>`;
-                                $('#status').html(status);
-                            } else {
-                                let status = `<p style="color:red">Failed to send tx: ${res.data.tx_response.log || res.data.tx_response.raw_log}</p>`;
-                                $('#status').html(status);
-                            }
-                        });
-                    }
-                );
+                sum = document.getElementById('sum').value
+                loopExecution(chainId, accounts[0].address, ops, fee, '', signerData,chain)
+                
+                // sign(chainId, accounts[0].address, ops, fee, '', signerData).then(
+                //     (bodyBytes) => {
+                //         broadcastTx(bodyBytes, chain).then((res) => {
+                //             $.toast().reset("all");
+                //             $.toast({
+                //                 heading: "Success",
+                //                 text: "Transaction Successful! ",
+                //                 showHideTransition: "slide",
+                //                 position: "top-center",
+                //                 icon: "success",
+                //             });
+                //             if (res.data.tx_response.code === 0) {
+                //                 let status = `<p>Transaction ID: </p><a href='https://ping.pub/${chain.name}/tx/${res.data.tx_response.txhash}' target="_blank">${res.data.tx_response.txhash}</a>`;
+                //                 $('#status').html(status);
+                //             } else {
+                //                 let status = `<p style="color:red">Failed to send tx: ${res.data.tx_response.log || res.data.tx_response.raw_log}</p>`;
+                //                 $('#status').html(status);
+                //             }
+                //         });
+                //     }
+                // );
             });
     })();
 
 });
+
+// 循环执行
+function loopExecution (chainId, address, ops, fee, str, signerData,chain) {
+    console.log('execute');
+    sign(chainId, address, ops, fee, '', signerData).then(
+        (bodyBytes) => {
+            broadcastTx(bodyBytes, chain).then((res) => {
+                $.toast().reset("all");
+                $.toast({
+                    heading: "Success",
+                    text: "Transaction Successful! ",
+                    showHideTransition: "slide",
+                    position: "top-center",
+                    icon: "success",
+                });
+                if (res.data.tx_response.code === 0) {
+                    let status = `<p>Transaction ID: </p><a href='https://ping.pub/${chain.name}/tx/${res.data.tx_response.txhash}' target="_blank">${res.data.tx_response.txhash}</a>`;
+                    $('#status').html(status);
+                } else {
+                    let status = `<p style="color:red">Failed to send tx: ${res.data.tx_response.log || res.data.tx_response.raw_log}</p>`;
+                    $('#status').html(status);
+                }
+                sum -= 1
+                setTimeout(() => {
+                    if (sum > 0) {
+                        loopExecution (chainId, address, ops, fee, str, signerData,chain)
+                    } else {
+                        console.log('end');
+                    }
+                    
+                },2000)
+            });
+        }
+    );
+}
