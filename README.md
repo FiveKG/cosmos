@@ -19,7 +19,7 @@ https://ericet.github.io/distribute/
 
 2. Open the folder
 
-`cd distribute`
+`cd cosmos`
 
 3. Install packages and dependencies
 
