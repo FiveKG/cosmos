@@ -15,7 +15,7 @@ https://ericet.github.io/distribute/
 ## Installation
 1. Clone the repo:
 
-`git clone https://github.com/ericet/distribute.git`
+`git clone https://github.com/FiveKG/cosmos.git`
 
 2. Open the folder
 
